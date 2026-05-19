@@ -88,3 +88,4 @@ Será integrada em etapa futura junto ao módulo Financeiro.
 | `VITE_SUPABASE_CRM_ANON_KEY` | Anon key do CRM |
 | `VITE_SUPABASE_FIN_URL` | URL do projeto Supabase Financeiro |
 | `VITE_SUPABASE_FIN_ANON_KEY` | Anon key do Financeiro |
+
