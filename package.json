@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "preinstall": "npm install --legacy-peer-deps",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -79,4 +80,6 @@
     "typescript-eslint": "^8.38.0",
     "vite": "^8.0.13"
   }
+
+
 }
