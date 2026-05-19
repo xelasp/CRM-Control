@@ -1,9 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 
-const url = import.meta.env.VITE_SUPABASE_FIN_URL as string;
-const key = import.meta.env.VITE_SUPABASE_FIN_ANON_KEY as string;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// O módulo financeiro será integrado em etapa futura.
-// Enquanto as variáveis não estiverem no .env, o client não é criado.
-export const supabaseFinanceiro =
-  url && key ? createClient(url, key) : null;
+export const supabaseFinanceiro = createClient(supabaseUrl, supabaseAnonKey);
