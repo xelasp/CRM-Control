@@ -8,8 +8,8 @@
  */
 import { createClient } from "@supabase/supabase-js";
 
-const url = import.meta.env.VITE_SUPABASE_FIN_URL as string;
-const key = import.meta.env.VITE_SUPABASE_FIN_ANON_KEY as string;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_FIN_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_FIN_ANON_KEY as string;
 
 if (!url || !key) {
   throw new Error(
