@@ -1,7 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_CRM_URL || "${SUPABASE_URL}";
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_CRM_ANON_KEY || "${SUPABASE_KEY}";
 
-export const supabaseCRM = createClient(supabaseUrl, supabaseAnonKey);
-
+export const supabaseCRM = createClient(SUPABASE_URL, SUPABASE_KEY);
