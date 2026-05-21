@@ -1,4 +1,4 @@
-import { LayoutDashboard, UserPlus, KanbanSquare, Receipt, Settings, Shield, Users } from 'lucide-react';
+import { LayoutDashboard, UserPlus, KanbanSquare, Receipt, Shield, Users } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useAuth } from '@/contexts/AuthContext';

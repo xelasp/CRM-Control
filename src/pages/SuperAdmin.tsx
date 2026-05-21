@@ -19,7 +19,9 @@ import { Building2, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { formatarData } from "@/lib/formatters";
 
-type OrgWithCount = Organization & { organization_members: { count: number }[] };
+interface OrgWithCount extends Organization {
+  organization_members: { count: number }[];
+}
 
 export default function SuperAdmin() {
   const [orgs, setOrgs] = useState<OrgWithCount[]>([]);
@@ -29,8 +31,8 @@ export default function SuperAdmin() {
     setLoading(true);
     try {
       const data = await fetchAllOrganizations();
-      setOrgs(data as OrgWithCount[]);
-    } catch (e) {
+      setOrgs(data as unknown as OrgWithCount[]);
+    } catch {
       toast.error("Erro ao carregar organizações");
     } finally {
       setLoading(false);
@@ -64,7 +66,6 @@ export default function SuperAdmin() {
         </div>
       </div>
 
-      {/* Resumo */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-1">
@@ -89,14 +90,11 @@ export default function SuperAdmin() {
             <CardTitle className="text-sm text-muted-foreground">Última org criada</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm font-medium">
-              {orgs[0]?.name ?? "—"}
-            </p>
+            <p className="text-sm font-medium">{orgs[0]?.name ?? "—"}</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Tabela de organizações */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Organizações</CardTitle>
