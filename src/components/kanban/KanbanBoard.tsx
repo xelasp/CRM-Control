@@ -5,13 +5,15 @@ import { Input } from "@/components/ui/input";
 import { KanbanColumn } from "./KanbanColumn";
 import { ClienteModal } from "./ClienteModal";
 import { useKanban } from "@/hooks/useKanban";
+import { useOrganization } from "@/contexts/OrganizationContext";
 import { inserirInteracao } from "@/services/historicoService";
 import { ETAPAS } from "@/types/kanban";
 import type { Cliente, Etapa } from "@/types/kanban";
 
 export function KanbanBoard() {
+  const { organization } = useOrganization();
   const { clientes, loading, erro, salvar, mover, deletar, recarregar } =
-    useKanban();
+    useKanban(organization?.id);
 
   const [busca, setBusca] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,6 +52,14 @@ export function KanbanBoard() {
     c.nome.toLowerCase().includes(busca.toLowerCase())
   );
 
+  if (!organization) {
+    return (
+      <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
+        Nenhuma organização encontrada.
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-400">
@@ -68,7 +78,6 @@ export function KanbanBoard() {
 
   return (
     <div className="flex flex-col h-full gap-4">
-      {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <Button onClick={abrirNovo} className="gap-2 shrink-0">
           <PlusCircle className="w-4 h-4" />
@@ -85,7 +94,6 @@ export function KanbanBoard() {
         </div>
       </div>
 
-      {/* Kanban board */}
       <div className="flex gap-3 overflow-x-auto pb-4">
         {ETAPAS.map((etapa) => (
           <KanbanColumn
@@ -101,7 +109,6 @@ export function KanbanBoard() {
         ))}
       </div>
 
-      {/* Modal */}
       <ClienteModal
         open={modalOpen}
         cliente={clienteEditando}

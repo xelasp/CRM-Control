@@ -9,28 +9,28 @@ import {
 } from "@/services/kanbanService";
 import { inserirInteracoes } from "@/services/historicoService";
 
-export function useKanban() {
+export function useKanban(orgId: string | undefined) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
   const carregar = useCallback(async () => {
+    if (!orgId) return;
     try {
       setErro(null);
-      const dados = await fetchClientes();
+      const dados = await fetchClientes(orgId);
       setClientes(dados);
     } catch (e) {
       setErro((e as Error).message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [orgId]);
 
   useEffect(() => {
-    carregar();
-  }, [carregar]);
+    if (orgId) carregar();
+  }, [carregar, orgId]);
 
-  /** Salva cliente novo ou edita existente + novas interações */
   const salvar = useCallback(
     async (
       payload: {
@@ -43,38 +43,30 @@ export function useKanban() {
       novasInteracoes: string[],
       editId?: string
     ) => {
+      if (!orgId) return;
       if (editId) {
         await atualizarCliente(editId, payload);
         await inserirInteracoes(editId, novasInteracoes);
       } else {
-        const novo = await criarCliente(payload);
+        const novo = await criarCliente(payload, orgId);
         await inserirInteracoes(novo.id, novasInteracoes);
       }
       await carregar();
     },
-    [carregar]
+    [carregar, orgId]
   );
 
-  /** Move card entre colunas */
-  const mover = useCallback(
-    async (id: string, etapa: Etapa) => {
-      // Otimistic update
-      setClientes((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, etapa } : c))
-      );
-      await moverEtapa(id, etapa);
-    },
-    []
-  );
+  const mover = useCallback(async (id: string, etapa: Etapa) => {
+    setClientes((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, etapa } : c))
+    );
+    await moverEtapa(id, etapa);
+  }, []);
 
-  /** Deleta cliente */
-  const deletar = useCallback(
-    async (id: string) => {
-      await deletarCliente(id);
-      setClientes((prev) => prev.filter((c) => c.id !== id));
-    },
-    []
-  );
+  const deletar = useCallback(async (id: string) => {
+    await deletarCliente(id);
+    setClientes((prev) => prev.filter((c) => c.id !== id));
+  }, []);
 
   return { clientes, loading, erro, salvar, mover, deletar, recarregar: carregar };
 }

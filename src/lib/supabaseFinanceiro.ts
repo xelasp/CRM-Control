@@ -1,1 +1,1 @@
-export { supabase as supabaseFinanceiro } from "../integrations/supabase/client";
+export { supabase as supabaseFinanceiro } from "@/integrations/supabase/client";

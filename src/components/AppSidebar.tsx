@@ -1,5 +1,7 @@
-import { LayoutDashboard, UserPlus, KanbanSquare, Receipt } from 'lucide-react';
+import { LayoutDashboard, UserPlus, KanbanSquare, Receipt, Settings, Shield, Users } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
+import { useOrganization } from '@/contexts/OrganizationContext';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Sidebar,
   SidebarContent,
@@ -10,9 +12,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  SidebarFooter,
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 const financeiroItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
@@ -23,7 +28,15 @@ const crmItems = [
   { title: 'CRM Kanban', url: '/kanban', icon: KanbanSquare },
 ];
 
-function NavItems({ items, collapsed }: { items: typeof financeiroItems; collapsed: boolean }) {
+const adminItems = [
+  { title: 'Painel Admin', url: '/admin', icon: Users },
+];
+
+const superAdminItems = [
+  { title: 'Super Admin', url: '/super-admin', icon: Shield },
+];
+
+function NavItems({ items, collapsed }: { items: { title: string; url: string; icon: React.ElementType }[]; collapsed: boolean }) {
   return (
     <SidebarMenu>
       {items.map((item) => (
@@ -35,7 +48,7 @@ function NavItems({ items, collapsed }: { items: typeof financeiroItems; collaps
               className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-sidebar-accent"
               activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium"
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-5 w-5 shrink-0" />
               {!collapsed && <span>{item.title}</span>}
             </NavLink>
           </SidebarMenuButton>
@@ -48,29 +61,34 @@ function NavItems({ items, collapsed }: { items: typeof financeiroItems; collaps
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
+  const { organization, isSuperAdmin } = useOrganization();
+  const { user, signOut } = useAuth();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-primary/10 p-2">
+          <div className="rounded-lg bg-primary/10 p-2 shrink-0">
             <Receipt className="h-6 w-6 text-primary" />
           </div>
           {!collapsed && (
-            <div className="flex flex-col">
-              <span className="font-semibold text-sidebar-foreground">Lexsan</span>
-              <span className="font-semibold text-sidebar-foreground">Soluções</span>
-              
+            <div className="flex flex-col overflow-hidden">
+              <span className="font-semibold text-sidebar-foreground truncate">
+                {organization?.name ?? 'CRM + Financeiro'}
+              </span>
+              <span className="text-xs text-sidebar-foreground/60 truncate">
+                {user?.email}
+              </span>
             </div>
           )}
         </div>
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Módulo Financeiro */}
+        {/* Financeiro */}
         <SidebarGroup>
           {!collapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-[12px] tracking-widest px-3 pb-1">
+            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-[10px] tracking-widest px-3 pb-1">
               Financeiro
             </SidebarGroupLabel>
           )}
@@ -81,10 +99,10 @@ export function AppSidebar() {
 
         <SidebarSeparator />
 
-        {/* Módulo CRM */}
+        {/* CRM */}
         <SidebarGroup>
           {!collapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-[12px] tracking-widest px-3 pb-1">
+            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-[10px] tracking-widest px-3 pb-1">
               CRM
             </SidebarGroupLabel>
           )}
@@ -92,7 +110,55 @@ export function AppSidebar() {
             <NavItems items={crmItems} collapsed={collapsed} />
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarSeparator />
+
+        {/* Admin da organização */}
+        <SidebarGroup>
+          {!collapsed && (
+            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-[10px] tracking-widest px-3 pb-1">
+              Organização
+            </SidebarGroupLabel>
+          )}
+          <SidebarGroupContent>
+            <NavItems items={adminItems} collapsed={collapsed} />
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Super Admin — visível só para super admin */}
+        {isSuperAdmin && (
+          <>
+            <SidebarSeparator />
+            <SidebarGroup>
+              {!collapsed && (
+                <SidebarGroupLabel className="text-yellow-400/80 uppercase text-[10px] tracking-widest px-3 pb-1">
+                  Super Admin
+                </SidebarGroupLabel>
+              )}
+              <SidebarGroupContent>
+                <NavItems items={superAdminItems} collapsed={collapsed} />
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
+        )}
       </SidebarContent>
+
+      <SidebarFooter className="p-3">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground"
+          onClick={signOut}
+        >
+          <Avatar className="h-5 w-5">
+            <AvatarImage src={user?.user_metadata?.avatar_url} />
+            <AvatarFallback className="text-[10px]">
+              {user?.email?.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          {!collapsed && <span className="text-xs truncate">Sair</span>}
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

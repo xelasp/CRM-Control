@@ -1,11 +1,12 @@
 import { supabaseCRM } from "@/lib/supabaseCRM";
 import type { Cliente, ClientePayload, Etapa } from "@/types/kanban";
 
-/** Carrega todos os clientes com histórico */
-export async function fetchClientes(): Promise<Cliente[]> {
+/** Carrega todos os clientes da organização com histórico */
+export async function fetchClientes(orgId: string): Promise<Cliente[]> {
   const { data, error } = await supabaseCRM
     .from("clientes")
-    .select("*, historico (*)");
+    .select("*, historico (*)")
+    .eq("org_id", orgId);
 
   if (error) throw new Error(error.message);
   return (data as Cliente[]) ?? [];
@@ -13,11 +14,12 @@ export async function fetchClientes(): Promise<Cliente[]> {
 
 /** Cria novo cliente na etapa Lead */
 export async function criarCliente(
-  payload: Omit<ClientePayload, "etapa">
+  payload: Omit<ClientePayload, "etapa">,
+  orgId: string
 ): Promise<Cliente> {
   const { data, error } = await supabaseCRM
     .from("clientes")
-    .insert([{ ...payload, etapa: "Lead" }])
+    .insert([{ ...payload, etapa: "Lead", org_id: orgId }])
     .select()
     .single();
 
@@ -48,7 +50,7 @@ export async function moverEtapa(id: string, etapa: Etapa): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
-/** Remove um cliente (cascade deleta o histórico no banco) */
+/** Remove um cliente */
 export async function deletarCliente(id: string): Promise<void> {
   const { error } = await supabaseCRM
     .from("clientes")
