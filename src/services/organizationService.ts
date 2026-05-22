@@ -4,7 +4,6 @@ import type { Organization, OrgMember, Invite } from "@/types/organization";
 /** Busca a organização do usuário logado */
 export async function fetchMyOrganization(): Promise<Organization | null> {
   const { data: { user } } = await supabase.auth.getUser()
-  console.log('fetchMyOrganization - user:', user?.id)
   if (!user) return null
 
   const { data: member, error: memberError } = await supabase
@@ -13,7 +12,6 @@ export async function fetchMyOrganization(): Promise<Organization | null> {
     .eq("user_id", user.id)
     .single()
 
-  console.log('fetchMyOrganization - member:', member, 'error:', memberError)
   if (memberError || !member) return null
 
   const { data: org, error: orgError } = await supabase
@@ -22,7 +20,6 @@ export async function fetchMyOrganization(): Promise<Organization | null> {
     .eq("id", member.org_id)
     .single()
 
-  console.log('fetchMyOrganization - org:', org, 'error:', orgError)
   if (orgError || !org) return null
   return org as Organization
 }

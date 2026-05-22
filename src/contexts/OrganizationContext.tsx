@@ -19,7 +19,7 @@ export function useOrganization() {
 }
 
 export function OrganizationProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();  // 👈 pega o loading do Auth
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [superAdmin, setSuperAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -46,8 +46,9 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    if (authLoading) return;  // 👈 espera o Auth terminar antes de rodar
     carregar();
-  }, [user]);
+  }, [user, authLoading]);  // 👈 reage ao authLoading também
 
   return (
     <OrganizationContext.Provider
