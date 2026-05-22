@@ -45,8 +45,8 @@ function NavItems({ items, collapsed }: { items: { title: string; url: string; i
             <NavLink
               to={item.url}
               end
-              className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-sidebar-accent"
-              activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+              className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-gray-700 hover:bg-sidebar-accent hover:text-gray-900"
+              activeClassName="bg-sidebar-accent text-gray-900 font-medium"
             >
               <item.icon className="h-5 w-5 shrink-0" />
               {!collapsed && <span className="text-sm font-medium">{item.title}</span>}
@@ -144,7 +144,7 @@ export function AppSidebar() {
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-start gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground"
+          className="w-full justify-start gap-2 text-gray-700 hover:text-gray-900"
           onClick={signOut}
         >
           <Avatar className="h-5 w-5">
