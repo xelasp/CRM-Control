@@ -99,7 +99,7 @@ export function AppSidebar() {
         {/* CRM */}
         <SidebarGroup>
           {!collapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-[10px] tracking-widest px-3 pb-1">
+            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-xs tracking-widest px-3 pb-1">
               CRM
             </SidebarGroupLabel>
           )}
@@ -113,7 +113,7 @@ export function AppSidebar() {
         {/* Admin da organização */}
         <SidebarGroup>
           {!collapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-[10px] tracking-widest px-3 pb-1">
+            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-xs tracking-widest px-3 pb-1">
               Organização
             </SidebarGroupLabel>
           )}
