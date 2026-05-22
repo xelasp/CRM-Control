@@ -34,8 +34,8 @@ const Auth = () => {
             <Receipt className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">CRM + Financeiro</h1>
-            <p className="text-sm text-muted-foreground mt-1">Lexsan</p>
+            <h1 className="text-2xl font-bold text-foreground">CRM GESTOR</h1>
+            <p className="text-sm text-muted-foreground mt-1">Lexsan Soluções</p>
           </div>
         </div>
 

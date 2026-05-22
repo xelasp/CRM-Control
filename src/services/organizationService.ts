@@ -3,14 +3,17 @@ import type { Organization, OrgMember, Invite } from "@/types/organization";
 
 /** Busca a organização do usuário logado */
 export async function fetchMyOrganization(): Promise<Organization | null> {
-  const { data, error } = await supabase
-    .from("organizations")
-    .select("*, organization_members!inner(user_id)")
-    .eq("organization_members.user_id", (await supabase.auth.getUser()).data.user?.id)
-    .single();
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
 
-  if (error) return null;
-  return data as Organization;
+  const { data, error } = await supabase
+    .from("organization_members")
+    .select("org_id, organizations(*)")
+    .eq("user_id", user.id)
+    .single()
+
+  if (error || !data) return null
+  return data.organizations as unknown as Organization
 }
 
 /** Cria uma nova organização e define o criador como admin */
