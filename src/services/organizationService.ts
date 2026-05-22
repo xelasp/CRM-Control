@@ -6,14 +6,24 @@ export async function fetchMyOrganization(): Promise<Organization | null> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  const { data, error } = await supabase
+  // Primeiro busca o org_id do membro
+  const { data: member, error: memberError } = await supabase
     .from("organization_members")
-    .select("org_id, organizations(*)")
+    .select("org_id")
     .eq("user_id", user.id)
     .single()
 
-  if (error || !data) return null
-  return data.organizations as unknown as Organization
+  if (memberError || !member) return null
+
+  // Depois busca a organização pelo id
+  const { data: org, error: orgError } = await supabase
+    .from("organizations")
+    .select("*")
+    .eq("id", member.org_id)
+    .single()
+
+  if (orgError || !org) return null
+  return org as Organization
 }
 
 /** Cria uma nova organização e define o criador como admin */
