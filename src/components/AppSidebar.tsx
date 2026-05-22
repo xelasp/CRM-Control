@@ -49,7 +49,7 @@ function NavItems({ items, collapsed }: { items: { title: string; url: string; i
               activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium"
             >
               <item.icon className="h-5 w-5 shrink-0" />
-              {!collapsed && <span>{item.title}</span>}
+              {!collapsed && <span className="text-sm font-medium">{item.title}</span>}
             </NavLink>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -65,7 +65,7 @@ export function AppSidebar() {
   const { user, signOut } = useAuth();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
+    <Sidebar collapsible="icon" className="border-r border-border bg-white">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
           <div className="rounded-lg bg-primary/10 p-2 shrink-0">
@@ -74,10 +74,7 @@ export function AppSidebar() {
           {!collapsed && (
             <div className="flex flex-col overflow-hidden">
               <span className="font-semibold text-sidebar-foreground truncate">
-                {organization?.name ?? 'CRM + Financeiro'}
-              </span>
-              <span className="text-xs text-sidebar-foreground/60 truncate">
-                {user?.email}
+                {organization?.name ?? 'CRM GESTOR'}
               </span>
             </div>
           )}
@@ -88,7 +85,7 @@ export function AppSidebar() {
         {/* Financeiro */}
         <SidebarGroup>
           {!collapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-[10px] tracking-widest px-3 pb-1">
+            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-xs tracking-widest px-3 pb-1">
               Financeiro
             </SidebarGroupLabel>
           )}
