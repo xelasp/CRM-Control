@@ -27,21 +27,13 @@ export async function criarOrganizacao(
     .replace(/[^a-z0-9-]/g, "")
     .slice(0, 40);
 
-  const { data: org, error: orgError } = await supabase
-    .from("organizations")
-    .insert([{ name, slug: `${slug}-${Date.now()}` }])
-    .select()
-    .single();
+  const { data, error } = await supabase.rpc("criar_organizacao", {
+    org_name: name,
+    org_slug: `${slug}-${Date.now()}`,
+  });
 
-  if (orgError) throw new Error(orgError.message);
-
-  const { error: memberError } = await supabase
-    .from("organization_members")
-    .insert([{ org_id: org.id, user_id: userId, role: "admin" }]);
-
-  if (memberError) throw new Error(memberError.message);
-
-  return org as Organization;
+  if (error) throw new Error(error.message);
+  return data as Organization;
 }
 
 /** Lista membros da organização */
