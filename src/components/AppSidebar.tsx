@@ -1,5 +1,5 @@
 import { LayoutDashboard, UserPlus, KanbanSquare, Receipt, Shield, Users } from 'lucide-react';
-import { NavLink } from '@/components/NavLink';
+import { useLocation, Link } from 'react-router-dom';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const financeiroItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
@@ -36,24 +37,43 @@ const superAdminItems = [
   { title: 'Super Admin', url: '/super-admin', icon: Shield },
 ];
 
-function NavItems({ items, collapsed }: { items: { title: string; url: string; icon: React.ElementType }[]; collapsed: boolean }) {
+function NavItems({
+  items,
+  collapsed,
+}: {
+  items: { title: string; url: string; icon: React.ElementType }[];
+  collapsed: boolean;
+}) {
+  const { pathname } = useLocation();
+
   return (
     <SidebarMenu>
-      {items.map((item) => (
-        <SidebarMenuItem key={item.title}>
-          <SidebarMenuButton asChild tooltip={item.title}>
-            <NavLink
-              to={item.url}
-              end
-              className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-gray-700 hover:bg-sidebar-accent hover:text-gray-900"
-              activeClassName="bg-sidebar-accent text-gray-900 font-medium"
+      {items.map((item) => {
+        const isActive = item.url === '/'
+          ? pathname === '/'
+          : pathname.startsWith(item.url);
+
+        return (
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive}
+              tooltip={item.title}
+              className={cn(
+                "transition-colors",
+                isActive
+                  ? "bg-sidebar-accent !text-white font-medium"
+                  : "hover:bg-sidebar-accent/20 text-sidebar-foreground"
+              )}
             >
-              <item.icon className="h-5 w-5 shrink-0" />
-              {!collapsed && <span className="text-sm font-medium">{item.title}</span>}
-            </NavLink>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      ))}
+              <Link to={item.url} className="flex items-center gap-3">
+                <item.icon className="h-5 w-5 shrink-0" />
+                {!collapsed && <span>{item.title}</span>}
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      })}
     </SidebarMenu>
   );
 }
@@ -65,7 +85,7 @@ export function AppSidebar() {
   const { user, signOut } = useAuth();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border bg-white">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
           <div className="rounded-lg bg-primary/10 p-2 shrink-0">
@@ -75,7 +95,7 @@ export function AppSidebar() {
             <div className="flex flex-col overflow-hidden">
               <span className="font-semibold text-sidebar-foreground truncate">
                 {organization?.name ?? 'CRM GESTOR'}
-              </span>
+              </span>           
             </div>
           )}
         </div>
@@ -85,7 +105,7 @@ export function AppSidebar() {
         {/* Financeiro */}
         <SidebarGroup>
           {!collapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-xs tracking-widest px-3 pb-1">
+            <SidebarGroupLabel className="text-sidebar-foreground/70 uppercase text-[12px] font-semibold tracking-widest px-3 pb-1">
               Financeiro
             </SidebarGroupLabel>
           )}
@@ -99,7 +119,7 @@ export function AppSidebar() {
         {/* CRM */}
         <SidebarGroup>
           {!collapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-xs tracking-widest px-3 pb-1">
+            <SidebarGroupLabel className="text-sidebar-foreground/70 uppercase text-[12px] font-semibold tracking-widest px-3 pb-1">
               CRM
             </SidebarGroupLabel>
           )}
@@ -110,10 +130,10 @@ export function AppSidebar() {
 
         <SidebarSeparator />
 
-        {/* Admin da organização */}
+        {/* Organização */}
         <SidebarGroup>
           {!collapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/50 uppercase text-xs tracking-widest px-3 pb-1">
+            <SidebarGroupLabel className="text-sidebar-foreground/70 uppercase text-[12px] font-semibold tracking-widest px-3 pb-1">
               Organização
             </SidebarGroupLabel>
           )}
@@ -122,13 +142,13 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Super Admin — visível só para super admin */}
+        {/* Super Admin */}
         {isSuperAdmin && (
           <>
             <SidebarSeparator />
             <SidebarGroup>
               {!collapsed && (
-                <SidebarGroupLabel className="text-yellow-400/80 uppercase text-[10px] tracking-widest px-3 pb-1">
+                <SidebarGroupLabel className="text-yellow-600 uppercase text-[10px] font-semibold tracking-widest px-3 pb-1">
                   Super Admin
                 </SidebarGroupLabel>
               )}
@@ -144,16 +164,16 @@ export function AppSidebar() {
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-start gap-2 text-gray-700 hover:text-gray-900"
+          className="w-full justify-start gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/20"
           onClick={signOut}
         >
-          <Avatar className="h-5 w-5">
+          <Avatar className="h-8 w-8">
             <AvatarImage src={user?.user_metadata?.avatar_url} />
-            <AvatarFallback className="text-[10px]">
+            <AvatarFallback className="text-[12px]">
               {user?.email?.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          {!collapsed && <span className="text-xs truncate">Sair</span>}
+          {!collapsed && <span className="text-sm truncate">Sair</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>
